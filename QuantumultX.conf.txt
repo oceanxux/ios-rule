@@ -1,0 +1,329 @@
+; 2020-12-08：增加对各个模块的说明(某些内容只适用于 1.0.14 以上版本)
+;⚠️注意⚠️: 以下内容中，带“;” “#”的都是注释符号，去掉前面的符号，该行才有效
+
+;general 模块内为一些通用的设置参数项
+[general]
+
+#running_mode_trigger=all_proxy, filter, asus-5g:all_direct, asus: all_proxy
+;Quantumult X 会对 server_check_url 指定的网址进行相应测试，以确认节点的可用性
+;你同样可以在 server_local/remote 中，为节点、订阅单独指定server_check_url参数
+server_check_url= http://www.qualcomm.cn/generate_204
+
+;👍👍👍资源解析器，可用于自定义各类远程资源的转换，如节点，规则 filter，复写 rewrite 等，url 地址可远程，可 本地/iCloud(Quantumult X/Scripts目录);
+;下面是我写的一个解析器，具体内容直接参照链接里的使用说明
+resource_parser_url= https://cdn.jsdelivr.net/gh/KOP-XIAO/QuantumultX@master/Scripts/resource-parser.js
+
+;👍👍geo_location_checker用于节点页面的节点信息展示，可完整自定义展示内容与方式
+; extreme-ip-lookup为Quantumult X 作者提供的示范 api
+;geo_location_checker=http://extreme-ip-lookup.com/json/, https://raw.githubusercontent.com/crossutility/Quantumult-X/master/sample-location-with-script.js
+;下面是我所使用的 api 及获取、展示节点信息的 js
+geo_location_checker=http://ip-api.com/json/?lang=zh-CN, https://raw.githubusercontent.com/KOP-XIAO/QuantumultX/master/Scripts/IP_API.js
+
+
+;👍👍👍运行模式模块，running_mode_trigger 设置，即根据网络自动切换 分流/直连/全局代理 等模式。
+;running-mode-trigger 模式下，跟手动切换直连/全局代理 等效，rewrite/task 模块始终会生效，比 ssid 策略组设置简单，比 ssid-suspend 更灵活。
+
+;running_mode_trigger=filter, filter, asus-5g:all_direct, asus: all_proxy
+; 上述写法，前两个 filter 表示 在 4G 网络跟一般 Wi-Fi 下，走 filter(分流)模式，asus-5g 则切换为全局直连，asus 切换为全局代理
+; 如需使用，相应 SSID 换成你自己 Wi-Fi 名即可
+
+
+;ssid_suspended_list，让 Quantumult X 在特定 Wi-Fi 网络下暂停工作(仅 task 模块会继续工作)，多个Wi-Fi用“,”连接
+;ssid_suspended_list=Asus, Shawn-Wifi
+
+;dns exclusion list中的域名将不使用fake-ip方式. 其它域名则全部采用 fake-ip 及远程解析的模式
+;dns_exclusion_list=*.qq.com, qq.com
+
+;UDP名单，留空则默认所有为端口。不在udp白名单列表中的端口，将被丢弃处理。
+;udp_whitelist=53, 123, 1900, 80-443
+
+;下列表中的内容将不经过 QuantumultX的处理
+;excluded_routes= 192.168.0.0/16, 172.16.0.0/12, 100.64.0.0/10, 10.0.0.0/8
+;icmp_auto_reply=true
+
+[dns]
+;指定的 dns服务器
+server=114.114.114.114
+server=202.141.176.93 
+server=202.141.178.13
+server=117.50.10.10
+server=223.5.5.5
+server=119.29.29.29:53
+server=119.28.28.28
+;指定域名解析dns
+server=/*.taobao.com/223.5.5.5
+server=/*.tmall.com/223.5.5.5
+server=/*.alipay.com/223.5.5.5
+server=/*.alicdn.com/223.5.5.5
+server=/*.aliyun.com/223.5.5.5
+server=/*.jd.com/119.28.28.28
+server=/*.qq.com/119.28.28.28
+server=/*.tencent.com/119.28.28.28
+server=/*.weixin.com/119.28.28.28
+server=/*.bilibili.com/119.29.29.29
+server=/hdslb.com/119.29.29.29
+server=/*.163.com/119.29.29.29
+server=/*.126.com/119.29.29.29
+server=/*.126.net/119.29.29.29
+server=/*.127.net/119.29.29.29
+server=/*.netease.com/119.29.29.29
+server=/*.mi.com/119.29.29.29
+server=/*.xiaomi.com/119.29.29.29
+;server=/*testflight.apple.com/23.76.66.98
+;server=8.8.8.8
+;server=/example1.com/8.8.4.4
+;server=/*.example2.com/223.5.5.5
+;server=/example4.com/[2001:4860:4860::8888]:53
+;address=/example5.com/192.168.16.18
+;address=/example6.com/[2001:8d3:8d3:8d3:8d3:8d3:8d3:8d3]
+
+
+
+[task_local]
+;任务模块，可用于签到,天气话费查询等
+;js文件放于iCloud或者本机的Quantumult X/Scripts 路径下。TF版本可直接使用远程js链接
+
+;从 “分” 开始的5位cron 写法，具体 cron 表达式可自行 Google
+;比如上述语句 代表每天 12 点 2 分，自动执行一次;
+;tag参数为 task 命名标识;
+;img-url参数用于指定 task 的图标(108*108)
+
+
+#以下为策略组[policy]部分
+# static 策略组中，你需要手动选择想要的节点/策略组。
+# available 策略组将按顺序选择你列表中第一个可用的节点。
+# round-robin 策略组，将按列表的顺序轮流使用其中的节点。
+# ssid 策略组，将根据你所设定的网络来自动切换节点/策略组
+;img-url 参数用于指定策略组图标，可远程，也可本地/iCloud(Quantumult X/Images路径下) （108*108 大小）
+;direct/proxy/reject 则只能用本地图标，名字分别为 direct.png, proxy.png,reject.png 放置于 Images 文件夹下即可生效 (108*108 大小)
+
+###event-interaction https://raw.githubusercontent.com/I-am-R-E/Functional-Store-Hub/Master/NodeLinkCheck/Script/NodeLinkCheck.js, tag=Env代理链路检测, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png, enabled=true
+
+
+[policy]
+
+static=节点选择, 自动选择, 香港, 台湾, 日本, 韩国, 新加坡, 美国, PROXY, DIRECT, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/Static.png
+# 默认设置10分钟测速一次，当前使用节点延迟和最新测速延迟最低的节点相差80ms以上则切换为最新的最低延迟节点，否则继续延用节点
+url-latency-benchmark=自动选择, server-tag-regex=.*, check-interval=600, tolerance=80, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/Urltest.png
+url-latency-benchmark=香港, server-tag-regex=(?=.*(港|HK|(?i)Hong))^((?!(台湾|日本|新加坡|美国|韩国|狮城|南朝鲜|US|SG|JP|KR|TW|台灣|美國|韓國|獅城)).)*$, check-interval=600, tolerance=80, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/HK.png
+url-latency-benchmark=台湾, server-tag-regex=(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$, check-interval=600, tolerance=80, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/TW.png
+url-latency-benchmark=日本, server-tag-regex=(?=.*(日本|JP|(?i)Japan))^((?!(香港|台湾|新加坡|美国|韩国|狮城|南朝鲜|US|SG|KR|HK|TW|台灣|美國|韓國|獅城)).)*$, check-interval=600, tolerance=100, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/JP.png
+url-latency-benchmark=韩国, server-tag-regex=(?=.*(KR|Korea|KOR|首尔|韩|韓|(?i)Korea))^((?!(香港|台湾|新加坡|美国|狮城|南朝鲜|US|SG|HK|TW|台灣|美國|獅城)).)*$, check-interval=600, tolerance=100, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/KR.png
+url-latency-benchmark=新加坡, server-tag-regex=(?=.*(新加坡|狮城|SG|(?i)Singapore))^((?!(香港|台湾|日本|美国|韩国|南朝鲜|US|JP|KR|HK|TW|台灣|美國|韓國)).)*$, check-interval=600, tolerance=100, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/SG.png
+url-latency-benchmark=美国, server-tag-regex=(?=.*(美国|美國|US|洛杉矶|西雅图|(?i)States|American))^((?!(香港|台湾|日本|新加坡|韩国|狮城|南朝鲜|SG|JP|KR|HK|TW|台灣|韓國|獅城)).)*$, check-interval=600, tolerance=100, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/US.png
+static=漏网之鱼, 节点选择, 自动选择, 香港, 台湾, 日本, 韩国, 新加坡, 美国, 英国, 意大利, 印度, 阿根廷, 卢森堡, 乌克兰, 土耳其, 德国, 泰国, 越南, 加拿大, 芬兰, 荷兰, 西班牙, PROXY, DIRECT, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
+
+#server-tag-regex 以及 resource-tag-regex 参数用于正则筛选来建立策略组
+#具体可参见教程部分: https://shrtm.nu/DAFP
+
+#以下是quantumultX的3普通种策略组类型写法
+;static=policy-name-1, Sample-A, Sample-B, Sample-C
+;available=policy-name-2, Sample-A, Sample-B, Sample-C
+;round-robin=policy-name-3, Sample-A, Sample-B, Sample-C
+#下面是ssid策略组示范
+;ssid=policy-name-4, Sample-A, Sample-B, LINK_22E171:Sample-B, LINK_22E172:Sample-C
+
+
+# "tag" 跟 "enabled" 为可选参数，分别表示 “标签”及“开启状态”, true 为开启，false 关闭.
+# update-interval 为更新时间参数，单位 秒, 默认更新时间为 24*60*60=86400 秒，也就是24小时.
+# opt-parser=true/false 用于控制是否对本订阅 开启资源解析器，不写或者 false 表示不启用解析器;
+
+#服务器远程订阅
+[server_remote]
+https://subv5.nanoport.xyz/api/v1/client/subscribe?token=11f573be168a07d793230b6a8ae41ce9, tag=2元, update-interval=172800, opt-parser=false, enabled=true
+https://deyniac.xyz/api/v1/client/subscribe?token=16551b819671a7e5c925047d245e7b6e, tag=星链, update-interval=172800, opt-parser=false, enabled=true
+https://xn--mes91r2ng7p4a.com/api/v1/client/subscribe?token=f71322ad4d347a2fc409a4e5fd129c63, tag=2T, update-interval=172800, opt-parser=true, enabled=true
+https://www.bfyun.top/api/v1/client/subscribe?token=b94b1ceb689441e7a885b8660daf1094, tag=八方云, update-interval=172800, opt-parser=false, enabled=true
+https://flycat.lw.al/link/IuWQIsK5LVu4GjXS?list=shadowrocket, tag=100g, update-interval=172800, opt-parser=true, enabled=true
+https://dler.cloud/subscribe/SaARDNljdtkSCuKwA7ND?mu=smart, tag=100G, update-interval=172800, opt-parser=true, enabled=true
+https://xn--4gq62f52gdss.com/api/v1/client/subscribe?token=9774fa1dfc9db244d1c8f0150cd481f7, tag=一元机场, update-interval=172800, opt-parser=false, enabled=true
+
+[filter_remote]
+# Unbreak 后续规则修正
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Unbreak.list, tag=🎯规则修正-直连, update-interval=172800, opt-parser=false, enabled=true
+# Streaming 国际流媒体服务
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/StreamingMedia/Streaming.list, , tag=🎯国际流媒体, force-policy=节点选择, update-interval=172800, opt-parser=false , enabled=true
+# Global 全球加速
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Global.list, tag=🎯全球加速, force-policy=节点选择, update-interval=172800, opt-parser=false , enabled=true
+# China 国内网站
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/China.list, tag=🎯国内网站-直连, force-policy=direct, update-interval=172800, opt-parser=false, enabled=true
+# ChinaIP 中国直连
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Extra/ChinaIP.list, tag=🎯中国IP-直连, update-interval=172800, opt-parser=false , enabled=true
+# Telegram
+https://github.com/apang1945/Quanx/blob/main/Quantumultx/Filter/Telegram.list, tag=🎯Telegram, update-interval=172800, opt-parser=true, enabled=true
+# Alibaba 国内
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/QuantumultX/Alibaba/Alibaba.list, tag=🎯阿里巴巴, update-interval=172800, opt-parser=true, enabled=true
+
+#远程分流模块，可使用force-policy来强制使用策略偏好, 替换远程规则内所指定的策略组
+;同样的
+# update-interval 为更新时间参数，单位 秒, 默认更新时间为 24*60*60=86400 秒，也就是24小时.
+# opt-parser=true/false 用于控制是否对本订阅 开启资源解析器，不写或者 false 表示不启用解析器;
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Guard/Advertising.list, tag=🚦去广告, update-interval=86400, opt-parser=true, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Guard/Hijacking.list, tag=🚫 运营商劫持, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/StreamingMedia/StreamingCN.list, tag=📽 国内视频, force-policy=📽 国内视频, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/StreamingMedia/Video/Netflix.list, tag=📺 Netflix, force-policy=📺 Netflix, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/StreamingMedia/Video/YouTube.list, tag=🎬 YouTube, force-policy=🎬 YouTube, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/StreamingMedia/Streaming.list, tag=💻 国外影视, force-policy=💻 国外影视, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Global.list, tag=🌍 国外网站, force-policy=🌏 国外网站, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Extra/Apple/Apple.list, tag= Apple服务, force-policy=🍎 苹果服务, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/Extra/Apple/BlockiOSUpdate.list, tag= 屏蔽更新, update-interval=172800, opt-parser=false, enabled=false
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Filter/China.list, tag=🐼 国内网站, update-interval=172800, opt-parser=false, enabled=true
+
+
+
+#支持本地/iCloud规则文件，位于Quantumult X/Profiles路径下
+;filter.txt, tag=本地分流, enabled=false
+
+#rewrite 复写远程订阅
+[rewrite_remote]
+https://github.com/ddgksf2013/Rewrite/raw/master/AdBlock/YoutubeAds.conf, tag=YouTube 破解, update-interval=172800, opt-parser=true, enabled=true
+https://raw.githubusercontent.com/singer1026/QX/main/fileball_aliyun_qx.js, tag=filleball, update-interval=172800, opt-parser=true, enabled=false
+https://github.com/I-am-R-E/Functional-Store-Hub/blob/9e642b677175fbe2b9e0d8ba5662008c9734fa32/Xmind/Xmind.QuantumultX.snippet, tag=Xmind——解锁会员订阅, update-interval=172800, opt-parser=true, enabled=false
+https://github.com/deezertidal/QuantumultX-Rewrite/blob/cb9ccf82b11e7a5121b79f5f12c8ac27f5bcd6d8/rewrite/BaiduCloud.conf, tag=百度云倍数解锁, update-interval=172800, opt-parser=true, enabled=false
+https://raw.githubusercontent.com/I-am-R-E/QuantumultX/main/MeiTuXiuXiu.conf, tag=解锁美图秀秀, update-interval=172800, opt-parser=false, enabled=false
+https://github.com/I-am-R-E/Functional-Store-Hub/blob/Master/KuWoMusic/KuWoMusic.QuantumultX.snippet, tag=解锁酷狗音乐, update-interval=172800, opt-parser=true, enabled=false
+https://raw.githubusercontent.com/yqc007/QuantumultX/master/WPSDocerVIPuserCrack.js, tag=wps, update-interval=172800, opt-parser=true, enabled=true
+https://raw.githubusercontent.com/gjwj666/jichang/main/llsyd.js, tag=流利说解锁, update-interval=172800, opt-parser=true, enabled=true
+https://raw.githubusercontent.com/deezertidal/QuantumultX-Rewrite/master/rewrite/doc.conf, tag=WPS稻壳会员, update-interval=172800, opt-parser=true, enabled=true
+https://raw.githubusercontent.com/deezertidal/QuantumultX-Rewrite/master/rewrite/SpotifyPremium.conf, tag=Spotify, update-interval=172800, opt-parser=true, enabled=true
+https://github.com/chavyleung/scripts/raw/master/box/rewrite/boxjs.rewrite.quanx.conf, tag=boxjs, update-interval=172800, opt-parser=false, enabled=false
+https://raw.githubusercontent.com/Orz-3/QuantumultX/master/JD_TB_price.conf, tag=京东比价, update-interval=172800, opt-parser=false, enabled=false
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rewrite/QuantumultX/AllInOne/AllInOne.conf, tag=重写去广告, update-interval=172800, opt-parser=false, enabled=true
+
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Rewrite/Block/AdvertisingPlus.conf, tag=🛡Block Advertising+, update-interval=86400, opt-parser=false, enabled=true
+https://raw.githubusercontent.com/DivineEngine/Profiles/master/Quantumult/Rewrite/General.conf, tag=🔀General, update-interval=86400, enabled=true
+#图标库
+https://raw.githubusercontent.com/Orz-3/QuantumultX/master/Bili_Auto_Regions.conf, tag=Bilibili换区脚本, update-interval=86400, opt-parser=false, enabled=false
+https://github.com/ddgksf2013/Rewrite/raw/master/Function/TFDownload.conf, tag=TestFlight区域限制解除, update-interval=86400, opt-parser=true, enabled=true
+https://limbopro.com/Adblock4limbo.conf, tag=毒奶特供, update-interval=172800, opt-parser=false, enabled=true
+#远程复写模块，内包含主机名hostname以及复写rewrite规则
+# update-interval 为更新时间参数，单位 秒, 默认更新时间为 24*60*60=86400 秒，也就是24小时.
+# opt-parser=true/false 用于控制是否对本订阅 开启资源解析器，不写或者 false 表示不启用解析器;
+
+https://raw.githubusercontent.com/Orz-3/QuantumultX/master/TikTok.conf, tag=TikTok, update-interval=86400, opt-parser=false, enabled=false
+
+
+https://raw.githubusercontent.com/qiangxinglin/Emby/main/QuantumultX/emby.conf, tag=Emby Premiere, update-interval=86400, opt-parser=false, enabled=false
+;Youtube premium 会员请勿开启此条
+//https://raw.githubusercontent.com/Orz-3/QuantumultX/master/YouTube.conf, tag=神机复写(🈲YouTube-AD), update-interval=86400, opt-parser=false, enabled=false
+
+
+#支持本地/iCloud的复写规则文件，位于Quantumult X/Profiles路径下
+;rewrite.txt, tag=本地复写, opt-parser=false, enabled=false
+
+# 本地服务器部分
+[server_local]
+
+vmess=tw.9527996.xyz:10563, method=aes-128-gcm, password=8aa6e470-7f5b-458f-9770-1adc89b4d178, fast-open=false, udp-relay=false, aead=true, tag=Hinet|台灣|Netflix
+
+trojan=155.248.163.254:41231, password=Qf2fD2mznl, over-tls=true, tls-verification=false, fast-open=false, udp-relay=false, tag=东京ARM
+
+
+# 以下示范都是 ip(域名):端口，
+# 比如 vmess-a.203.167.55.4:777 ，实际是 203.167.55.4:777
+# 前面的 ss-a，ws-tls这些，只是为了让你快速找到自己节点的类型
+# 实际使用时，请不要真的 傻乎乎的 写 vmess-a.203.167.55.4:777 这种。
+
+#shadowsocks以及shadowsocksR类型
+;shadowsocks=ss-a.example.com:80, method=chacha20, password=pwd, obfs=http, obfs-host=bing.com, obfs-uri=/resource/file, fast-open=false, udp-relay=false, server_check_url=http://www.apple.com/generate_204, tag=Sample-A
+;shadowsocks=ss-b.example.com:80, method=chacha20, password=pwd, obfs=http, obfs-host=bing.com, obfs-uri=/resource/file, fast-open=false, udp-relay=false, tag=Sample-B
+;shadowsocks=ss-c.example.com:443, method=chacha20, password=pwd, obfs=tls, obfs-host=bing.com, fast-open=false, udp-relay=false, tag=Sample-C
+;shadowsocks=ssr-a.example.com:443, method=chacha20, password=pwd, ssr-protocol=auth_chain_b, ssr-protocol-param=def, obfs=tls1.2_ticket_fastauth, obfs-host=bing.com, tag=Sample-D
+;shadowsocks=ws-a.example.com:80, method=aes-128-gcm, password=pwd, obfs=ws, obfs-uri=/ws, fast-open=false, udp-relay=false, tag=Sample-E
+;shadowsocks=ws-b.example.com:80, method=aes-128-gcm, password=pwd, obfs=ws, fast-open=false, udp-relay=false, tag=Sample-F
+;shadowsocks=ws-tls-a.example.com:443, method=aes-128-gcm, password=pwd, obfs=wss, obfs-uri=/ws, fast-open=false, udp-relay=false, tag=Sample-G
+
+# vmess 类型，ws，wss(ws+tls),over-tls,tcp 
+; ws 类型
+;vmess=ws-c.example.com:80, method=chacha20-ietf-poly1305, password= 23ad6b10-8d1a-40f7-8ad0-e3e35cd32291, obfs-host=ws-c.example.com, obfs=ws, obfs-uri=/ws, fast-open=false, udp-relay=false, tag=Sample-H
+; wss(ws+tls) 类型
+;vmess=ws-tls-b.example.com:443, method=chacha20-ietf-poly1305, password= 23ad6b10-8d1a-40f7-8ad0-e3e35cd32291, obfs-host=ws-tls-b.example.com, obfs=wss, obfs-uri=/ws, tls-verification=true,fast-open=false, udp-relay=false, tag=Sample-I
+; tcp 类型
+;vmess=vmess-a.example.com:80, method=aes-128-gcm, password=23ad6b10-8d1a-40f7-8ad0-e3e35cd32291, fast-open=false, udp-relay=false, tag=Sample-J
+;vmess=vmess-b.example.com:80, method=none, password=23ad6b10-8d1a-40f7-8ad0-e3e35cd32291, fast-open=false, udp-relay=false, tag=Sample-K
+; over-tls 类型
+;vmess=vmess-over-tls.example.com:443, method=none, password=23ad6b10-8d1a-40f7-8ad0-e3e35cd32291, obfs-host=vmess-over-tls.example.com, obfs=over-tls, tls-verification=true, fast-open=false, udp-relay=false, tag=Sample-L
+
+; http(s) 类型
+;http=http.example.com:80, username=name, password=pwd, fast-open=false, udp-relay=false, tag=http
+;http=https.example.com:443, username=name, password=pwd, over-tls=true, tls-verification=true, tls-host=example.com, tls-verification=true, fast-open=false, udp-relay=false, tag=http-tls
+
+; trojan 类型
+;trojan=example.com:443, password=pwd, over-tls=true, tls-verification=true, fast-open=false, udp-relay=false, tag=trojan-tls-01
+;trojan=192.168.1.1:443, password=pwd, over-tls=true, tls-host=example.com, tls-verification=true, fast-open=false, udp-relay=false, tag=trojan-tls-02
+
+
+#本地分流规则(对于完全相同的某条规则，本地的将优先生效)
+[filter_local]
+ip-cidr, 49.51.0.0/16, direct
+host, itunes.apple.com, direct
+host, sdkapi-smartop.jiguang.cn, direct
+host, sdkapi-smartop.jiguang.cn, direct
+host, sgshort.wechat.com, direct
+#网易云音乐
+host-suffix, music.126.net, direct
+
+host, extshort.weixin.qq.com, direct
+;user-agent, ?abc*, proxy
+;host, www.google.com, proxy
+;host-keyword, adsite, reject
+;host-suffix, googleapis.com, proxy
+ip-cidr, 10.0.0.0/8, direct
+ip-cidr, 127.0.0.0/8, direct
+ip-cidr, 172.16.0.0/12, direct
+ip-cidr, 192.168.0.0/16, direct
+ip-cidr, 224.0.0.0/24, direct
+# Local Area Network 局域网
+host-suffix, local, direct
+ip-cidr, 192.168.0.0/16, direct
+ip-cidr, 10.0.0.0/8, direct
+ip-cidr, 172.16.0.0/12, direct
+ip-cidr, 127.0.0.0/8, direct
+ip-cidr, 100.64.0.0/10, direct
+ip-cidr, 224.0.0.0/4, direct
+ip6-cidr, fe80::/10, direct
+# 已采用 ip 池数据，因此注释掉 geoip cn
+;geoip, cn, direct
+
+#不在上述规则中(远程以及本地)的剩余请求，将走final 指定的节点/策略，这里即是 → 🕹 终极清单, 请根据自己的需求来选择直连或节点、策略
+final, 🕹 终极清单
+
+
+
+#本地复写规则
+[rewrite_local]
+
+
+// 重写，翻译所有语言为简体；
+https:\/\/www.youtube.com\/api\/timedtext\?.+&lang=(?!zh).+?((?!&tlang=zh\-Hans).)*$ url request-header \sHTTP/1\.1(\r\n) request-header &tlang=zh-Hans HTTP/1.1$1
+
+
+
+#以下为证书&主机名部分
+[mitm]
+hostname = -*.snssdk.com,*.www.youtube.com
+
+passphrase = C691E0FF
+p12 = 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
+;以下模块去掉;才生效
+;请自行在 APP 的UI中生成证书 并安装&信任
+;skip_validating_cert = false
+;force_sni_domain_name = false
+;hostname = *.example.com, *.sample.com
+;passphrase = 
+;p12 = 
+
+
+[http_backend]
+https://raw.githubusercontent.com/chavyleung/scripts/master/chavy.box.js, tag=boxjs, path=^/, enabled=true
+
