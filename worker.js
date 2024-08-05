@@ -141,7 +141,6 @@ async function handleRequest(request) {
       <iframe class="map" src="https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed"></iframe>
     </div>
     <div class="footer">
-      © chatgpt.org.uk All rights reserved | <a href="https://chatgpt.org.uk" target="_blank">https://chatgpt.org.uk</a>
     </div>
     <script>
       function copyToClipboard(text) {
